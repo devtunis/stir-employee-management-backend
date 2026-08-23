@@ -21,13 +21,21 @@ const OrganizationSchema = new mongoose.Schema(
         conge :{type:Number,default:21},
         salaire  :{type:Number,default:2000},
         next:{type:String,default:"nil"},
-        response_conge :[],
+        response_conge :[
+          {
+          reponse:{type:String},
+          cin_reponse:{type:String},
+          reason :{type:String}
+          }
+        ],
         request_conge :[
           {
+            _id:false,
             cin:{type:String},
             reason:{type:String},
             nbjr:{type:Number},
-            roomId :{type:String}
+            roomId :{type:String},
+            nom :{type:String}
           }
         ]
 
