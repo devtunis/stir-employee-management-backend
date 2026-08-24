@@ -11,6 +11,22 @@ const setmemberController = async(req,res) => {
           if(!repoId || !cinUser){
             return res.status(404).json({messag: "missing repoID"})
           }
+          if(cinUser== req.user.cin){
+            return res.status(404).json({
+              err:"you the owner 🤦‍♂️ "
+            })
+          }
+          const findIfUserINqueeList = await Organization.findOne(
+            {roomId:repoId ,
+            "requests.cin":cinUser
+            }
+          
+          )
+          if(!findIfUserINqueeList){
+            return res.status(404).json({
+              err:"this user not in the quee list"
+            })
+          }
           const fetchrepoID =  await Organization.findOne({roomId:repoId}).select("ownerId -_id")
         
           if(!fetchrepoID)

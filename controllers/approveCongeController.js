@@ -3,23 +3,48 @@ import Organization from "../model/organization.js"
  
 const approveCongeController =async (req,res) => {
     const {roomId,cin,answer,reason,nbjr,nom} = req.body
+
+    
     if(!roomId || !cin || answer==undefined || !reason || !nbjr || !nom  ){
         return res.status(404).json({
             err:"missing fields"
         })
     }
+
+    const findRoom = await Organization.findOne({roomId})
+    if(!findRoom){
+        return res.status(404).json({
+            err:"no orgaization with this id"
+        })
+    }
+ 
     
     const checkIfCinExisit = await Organization.findOne(
         {roomId,
             "members.cin":cin
+        },
+           {
+        members: {
+         $elemMatch: { cin: cin }
+        }
         }
     )
+
+    
+
+
     if(!checkIfCinExisit){
         return res.status(404).json({
             err:"this user not here in this organization"
         })
     }
   
+        const Permision = checkIfCinExisit.members[0].role
+        if(Permision.includes("admin")){
+            return res.status(404).json({
+                err:"admins special traitemnt"
+            })
+        }
         const seeMyRoles =   await Organization.findOne({
             roomId,
             "members.cin":req.user.cin ,
@@ -43,24 +68,80 @@ const approveCongeController =async (req,res) => {
         })
     }
     if(getMynext=="end"){
-        if(answer){
-     return res.status(301).json({
-            err:"should return approve imedilty to the user"
-        })
-        }else{
-  return res.status(301).json({
-            err:"should return refuse imedilty to the user"
-        })
-        }
+
+            await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.request_conge.cin": cin
+                },
+                {
+                    $pull: {
+                    "members.$[].request_conge": {
+                        cin: cin
+                    }
+                    }
+                },
+                {
+                    returnDocument:"after"
+                }
+            )
+            await Organization.findOneAndUpdate({
+                roomId, 
+                "members.cin" :cin
+            },
+            {
+                    $addToSet:{
+                        "members.$.response_conge":{reponse:answer?"yes":"no",cin_reponse:req.user.cin,reason:answer?"*":reason}
+                    }
+                }
+            ,{
+                returnDocument:"after"
+            }
+        
+            )
+
+
+
+         
+      
       
     }    
     if(getMynext && getMynext!="nil" && answer){
 
 
+        const ifThisOderInmyRquests = Organization.findOne({
+            roomId,
+            "members.request_conge.cin":cin
+        })
+        if(!ifThisOderInmyRquests){
+            return res.status(404).json(
+                {
+                    err:"this fake request !"
+                }
+            )
+        }
 
+       
+          await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.request_conge.cin": cin
+                },
+                {
+                    $pull: {
+                    "members.$[].request_conge": {
+                        cin: cin
+                    }
+                    }
+                },
+                {
+                    returnDocument:"after"
+                }
+                );
+            
+          
 
-
-          const send_to_next = await Organization.findOneAndUpdate({
+          await Organization.findOneAndUpdate({
                     roomId,
                    "members.cin":getMynext,
                     
@@ -74,10 +155,7 @@ const approveCongeController =async (req,res) => {
                     returnDocument:"after"
                 }
             )
-
-            if(send_to_next){
-                console.log("sucess sned to user")
-            }
+  
 
       
         return res.status(200).json({
@@ -87,6 +165,45 @@ const approveCongeController =async (req,res) => {
         
     }
     if(getMynext && getMynext!="nil" && !answer){
+
+
+              await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.request_conge.cin": cin
+                },
+                {
+                    $pull: {
+                    "members.$[].request_conge": {
+                        cin: cin
+                    }
+                    }
+                },
+                {
+                    returnDocument:"after"
+                }
+                );
+            
+
+
+
+
+          await Organization.findOneAndUpdate({
+                roomId, 
+                "members.cin" :cin
+            },
+            {
+                    $addToSet:{
+                        "members.$.response_conge":{reponse:answer?"yes":"no",cin_reponse:req.user.cin,reason:answer?"*":reason}
+                    }
+                }
+            ,{
+                returnDocument:"after"
+            }
+        
+            )
+
+
         return res.status(200).json({
             err:"should be refuse  my next thing to" +"user?="+cin
         })
