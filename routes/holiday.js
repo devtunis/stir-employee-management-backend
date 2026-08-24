@@ -1,8 +1,8 @@
 import express from "express"
-import sendholidayController from "../controllers/sendholidayController.js"
+import {sendholidayController,seeCongeController,approveCongeController} from "../controllers/holidayBuffer/holidayBuffer.js"
  
-import seeCongeController from "../controllers/acceptCongeController.js"
-import approveCongeController from "../controllers/approveCongeController.js"
+ 
+ 
  
 const router = express.Router()
 
