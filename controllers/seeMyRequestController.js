@@ -29,7 +29,7 @@ const seeMyRequestController = async(req,res) => {
             err:"room or user not exist 🤦‍♂️"
         })
     }
-    console.log(findUser)
+   
 
     return res.json({
         info:findUser.members[0].response_conge,

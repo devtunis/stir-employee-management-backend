@@ -37,7 +37,7 @@ const setmemberController = async(req,res) => {
           return res.status(404).json({message: "you not authorized to to this action 🌹"})
            }
 
-           const findExistUser = await Organization.findOne({"members.cin":cinUser})
+           const findExistUser = await Organization.findOne({roomId:repoId,"members.cin":cinUser})
            if(findExistUser){
             return res.status(409).json({err:"your already here 🤦‍♂️!"})
            }

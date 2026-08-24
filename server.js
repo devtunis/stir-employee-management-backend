@@ -6,6 +6,7 @@ import verifyJwt from "./middleware/verifyJwt.js"
 import useAuth from "./routes/auth.js"
 import useOrganization from "./routes/organization.js"
 import useholiday from "./routes/holiday.js"
+import useSeefollowOrg from "./routes/useSeefollowOrg.js"
 const app = express()
 
 
@@ -23,7 +24,7 @@ app.use(cors({
 app.use("/auth",useAuth)
 app.use("/ogranization",verifyJwt,useOrganization)
 app.use("/holiday",verifyJwt,useholiday)
-
+app.use("/seefollowOrg",verifyJwt,useSeefollowOrg)
 
  
 

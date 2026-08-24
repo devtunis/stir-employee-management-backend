@@ -35,7 +35,10 @@ const OrganizationSchema = new mongoose.Schema(
             reason:{type:String},
             nbjr:{type:Number},
             roomId :{type:String},
-            nom :{type:String}
+            nom :{type:String},
+            debut:{type:String},
+            fin :{type:String}
+
           }
         ]
 
