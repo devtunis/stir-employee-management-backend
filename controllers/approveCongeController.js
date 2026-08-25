@@ -2,8 +2,21 @@ import Organization from "../model/organization.js"
 
  
 const approveCongeController =async (req,res) => {
-    const {roomId,cin,answer,reason,nbjr,nom} = req.body
+    const {
+        roomId,
+        cin,
+        answer,
+        reason,
+        nbjr,
+        nom ,
 
+        debut,
+        fin,
+        typeConge,
+    
+      } = req.body
+
+    
     
     if(!roomId || !cin || answer==undefined || !reason || !nbjr || !nom  ){
         return res.status(404).json({
@@ -157,7 +170,7 @@ const approveCongeController =async (req,res) => {
                     
                 },{
                     $addToSet:{
-                        "members.$.request_conge":{cin:cin,reason:reason,nbjr,roomId,nom:nom}
+                        "members.$.request_conge":{cin:cin,reason:reason,nbjr,roomId,nom:nom,debut,fin,typeConge}
                     }
                 }
         
@@ -166,6 +179,7 @@ const approveCongeController =async (req,res) => {
                 }
             )
   
+            console.log(result_pull,"custom preview")
 
       
         return res.status(200).json({

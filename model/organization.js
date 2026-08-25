@@ -30,8 +30,17 @@ const OrganizationSchema = new mongoose.Schema(
           {
           reponse:{type:String},
           cin_reponse:{type:String},
-          reason :{type:String}
+          reason :{type:String},
+          debut:{tyep:String},
+          fin:{tyep:String},
+          dateResponse_conge: {
+              type: Date,
+              default: Date.now
+            }
+
+
           }
+
         ],
         request_conge :[
           {
@@ -43,6 +52,7 @@ const OrganizationSchema = new mongoose.Schema(
             nom :{type:String},
             debut:{type:String},
             fin :{type:String},
+            typeConge:{type:String},
             datedemande: {
               type: Date,
               default: Date.now

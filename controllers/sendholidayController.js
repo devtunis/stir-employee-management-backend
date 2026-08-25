@@ -3,12 +3,14 @@ import Organization from "../model/organization.js"
  
 const sendholidayController = async(req,res) => {
   try{
-     const {reason_holiday,nbjr,roomId ,debut,fin} = req.body
+     const {reason,nbjr,roomId ,debut,fin,typeConge} = req.body
       
-     if(  !reason_holiday ||!nbjr  || !debut |!fin) {return res.status(404).json({err:"missing fields"})}
+     if(  !reason ||!nbjr  || !debut |!fin || !typeConge) {return res.status(404).json({err:"missing fields"})}
+     
      const fetchrepoID =  await Organization.findOne({roomId:roomId}).select("ownerId -_id")
      if(!fetchrepoID) { return res.status(404).json({err:"no ogranizations with this ID 🤦‍♂️"}) }
      if(fetchrepoID.ownerId==req.user.cin) {return res.status(403).json({err:"you the owner you don't need holiday"}) }
+     
      const finduser = await Organization.findOne({
         roomId,
         "members.cin":req.user.cin
@@ -51,7 +53,7 @@ const sendholidayController = async(req,res) => {
            head:first_heading
         },{
             $addToSet:{
-                "members.$.request_conge":{cin:req.user.cin,reason:reason_holiday,nbjr,roomId,nom:req.user.nom,debut,fin}
+                "members.$.request_conge":{cin:req.user.cin,reason,nbjr,roomId,nom:req.user.nom,debut,fin,typeConge}
             }
         }
 

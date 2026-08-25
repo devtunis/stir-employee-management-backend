@@ -1,4 +1,5 @@
 import Organization from "../model/organization.js"
+import User from "../model/users.js"
 
  
 const getSpecifOrganization =async (req,res) => {
@@ -12,6 +13,8 @@ const getSpecifOrganization =async (req,res) => {
         })
     }
 
+      
+
 
     
      
@@ -22,9 +25,12 @@ const getSpecifOrganization =async (req,res) => {
         })
       }
       
+      // const otherdata = await User.findOne({cin:req.user.cin})
+
   return  res.status(200).json({
     data:filterdata,
-    res:filterdata.role
+    res:filterdata.role,
+    // otherdata
 
   })
 }

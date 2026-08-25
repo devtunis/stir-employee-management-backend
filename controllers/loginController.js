@@ -17,7 +17,7 @@ const loginController = async(req,res) => {
              res.cookie("token",CreateJWT, {
                 httpOnly:true,
                 secure:false,
-                maxAge:30 * 24 * 60 * 60
+                maxAge:30 * 24 * 60 * 60 * 1000
              }).status(200).json({
                 messag: "OK",
                 data:fetchUser
