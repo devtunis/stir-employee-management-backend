@@ -21,7 +21,8 @@ const joinController = async(req,res) => {
            }
 
            const findExistUser = await Organization.findOne({roomId:repoId,"members.cin":req.user.cin})
-           if(findExistUser){
+           const findExistUser2 = await Organization.findOne({roomId:repoId,"requests.cin":req.user.cin})
+           if(findExistUser || findExistUser2){
             return res.status(409).json({err:"your rquest has ben sent 🤦‍♂️!"})
            }
 

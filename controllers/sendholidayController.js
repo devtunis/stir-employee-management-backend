@@ -3,8 +3,9 @@ import Organization from "../model/organization.js"
  
 const sendholidayController = async(req,res) => {
   try{
-     const {reason_holiday,nbjr,roomId} = req.body
-     if(  !reason_holiday ||!nbjr   ) {return res.status(404).json({err:"missing fields"})}
+     const {reason_holiday,nbjr,roomId ,debut,fin} = req.body
+      
+     if(  !reason_holiday ||!nbjr  || !debut |!fin) {return res.status(404).json({err:"missing fields"})}
      const fetchrepoID =  await Organization.findOne({roomId:roomId}).select("ownerId -_id")
      if(!fetchrepoID) { return res.status(404).json({err:"no ogranizations with this ID 🤦‍♂️"}) }
      if(fetchrepoID.ownerId==req.user.cin) {return res.status(403).json({err:"you the owner you don't need holiday"}) }
@@ -24,10 +25,21 @@ const sendholidayController = async(req,res) => {
         })
      }
 
+       
 
  
 
      if(finduser?.members[0]?.role=="user"){
+         const finsIFyourHavePendingRequest = await Organization.findOne({
+            roomId,
+            "members.request_conge.cin":req.user.cin
+        })
+
+        if(finsIFyourHavePendingRequest){
+            return res.status(409).json({
+                err:"you have Pending request 🤦‍♂️"
+            })
+        }
         const heading = await Organization.findOne({roomId}).select("head -_id")
         const first_heading = heading.head
         if(first_heading=="nil"){
@@ -39,7 +51,7 @@ const sendholidayController = async(req,res) => {
            head:first_heading
         },{
             $addToSet:{
-                "members.$.request_conge":{cin:req.user.cin,reason:reason_holiday,nbjr,roomId,nom:req.user.nom}
+                "members.$.request_conge":{cin:req.user.cin,reason:reason_holiday,nbjr,roomId,nom:req.user.nom,debut,fin}
             }
         }
 
@@ -54,6 +66,7 @@ const sendholidayController = async(req,res) => {
      }
    
   }catch(error){
+     
     res.status(404).json({err:error.message})
   }
 }

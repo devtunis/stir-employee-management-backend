@@ -69,7 +69,8 @@ const approveCongeController =async (req,res) => {
     }
     if(getMynext=="end"){
 
-            await Organization.findOneAndUpdate(
+         
+    let result_pull =      await Organization.findOneAndUpdate(
                 {
                     roomId,
                     "members.request_conge.cin": cin
@@ -85,6 +86,9 @@ const approveCongeController =async (req,res) => {
                     returnDocument:"after"
                 }
             )
+
+
+
             await Organization.findOneAndUpdate({
                 roomId, 
                 "members.cin" :cin
@@ -101,7 +105,13 @@ const approveCongeController =async (req,res) => {
             )
 
 
+     return res.status(200).json({
+            info:"should be send my next thing to" +" " +getMynext ,
+            info:{roomId,cin,answer,reason,nbjr,nom} ,
+             
+            res:result_pull.members.find((item)=>item.cin==req.user.cin).request_conge  
 
+        })
          
       
       
@@ -122,7 +132,7 @@ const approveCongeController =async (req,res) => {
         }
 
        
-          await Organization.findOneAndUpdate(
+      let result_pull =     await Organization.findOneAndUpdate(
                 {
                     roomId,
                     "members.request_conge.cin": cin
@@ -159,8 +169,11 @@ const approveCongeController =async (req,res) => {
 
       
         return res.status(200).json({
-            err:"should be send my next thing to" +" " +getMynext ,
-            info:{roomId,cin,answer,reason,nbjr,nom}
+            info:"should be send my next thing to" +" " +getMynext ,
+            info:{roomId,cin,answer,reason,nbjr,nom} ,
+            pullview:result_pull,
+            res:result_pull.members.find((item)=>item.cin==req.user.cin).request_conge  
+
         })
         
     }

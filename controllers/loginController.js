@@ -20,7 +20,7 @@ const loginController = async(req,res) => {
                 maxAge:30 * 24 * 60 * 60
              }).status(200).json({
                 messag: "OK",
-                mvm:fetchUser
+                data:fetchUser
              })
             
         }else{

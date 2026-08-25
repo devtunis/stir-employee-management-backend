@@ -4,12 +4,13 @@ import requests from "../requests.js"
 import setmemberController from "../setmemberController.js"
 import setAdmin from "../setAdminController.js"
 import setnextController from "../setnextController.js"
-
+import getSpecifOrganization from "../getSpecifOrganization.js"
 export {
     createController,
     joinController, 
     requests ,
     setmemberController ,
     setAdmin,
-    setnextController
+    setnextController,
+    getSpecifOrganization
 }

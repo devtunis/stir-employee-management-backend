@@ -4,14 +4,15 @@ import {shortId} from "../util/shortId.js"
 const createController = async(req,res) => {
      try{
  
-           const {nameOrganization} = req.body
-           if(!nameOrganization){
+           const {nameOrganization,activity} = req.body
+           if(!nameOrganization || !activity){
              return res.status(404).json({messag: "missing fileds"})
            }
            const registerOrganization =   new Organization( {
                  roomId:shortId(),
                  ownerId:req.user.cin,
-                 nameOrganization
+                 nameOrganization,
+                 activity
              })
  
  

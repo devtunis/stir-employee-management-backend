@@ -5,11 +5,16 @@ const OrganizationSchema = new mongoose.Schema(
     roomId:{type:String,unqiue:true},
     nameOrganization: {type: String, trim: true},
     ownerId: {type: String},
+    activity :{type:String},
     requests :[
       {
          _id: false,
         cin:{type:String},
-        nom:{type:String}
+        nom:{type:String},
+        date: {
+          type: Date,
+          default: Date.now
+        }
       }
     ]
 ,
@@ -37,7 +42,12 @@ const OrganizationSchema = new mongoose.Schema(
             roomId :{type:String},
             nom :{type:String},
             debut:{type:String},
-            fin :{type:String}
+            fin :{type:String},
+            datedemande: {
+              type: Date,
+              default: Date.now
+            }
+            
 
           }
         ]

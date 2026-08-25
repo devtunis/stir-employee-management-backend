@@ -56,8 +56,27 @@ const setmemberController = async(req,res) => {
             
 
 
+        const result = await Organization.findOneAndUpdate(
+          {
+            roomId:repoId,
+            "requests.cin": cinUser
+          },
+          {
+            $pull: {
+              requests: { cin: cinUser }
+            }
+          },
+          {
+            returnDocument: "after"
+          }
+        );
+
+
+                  
+
+
           
-           res.status(200).json(addWorker)
+           res.status(200).json({w:addWorker,result:result})
     }
     catch(err){
         res.status(404).json({message :err.message})
