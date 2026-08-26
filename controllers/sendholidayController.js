@@ -7,7 +7,8 @@ const sendholidayController = async(req,res) => {
       
      if(  !reason ||!nbjr  || !debut |!fin || !typeConge) {return res.status(404).json({err:"missing fields"})}
      
-     const fetchrepoID =  await Organization.findOne({roomId:roomId}).select("ownerId -_id")
+     const fetchrepoID =  await Organization.findOne({roomId:roomId}) 
+     
      if(!fetchrepoID) { return res.status(404).json({err:"no ogranizations with this ID 🤦‍♂️"}) }
      if(fetchrepoID.ownerId==req.user.cin) {return res.status(403).json({err:"you the owner you don't need holiday"}) }
      
@@ -62,6 +63,23 @@ const sendholidayController = async(req,res) => {
         }
     )
         
+       await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": req.user.cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest":fetchrepoID.members.find((item)=>item.cin==first_heading).role,
+                   
+                    },
+                }
+                );
+
+
+
+
+    
         res.status(200).json(send_holiday_request)
      }else{
          res.status(200).json("you special case admin we will figure out aobut you")
