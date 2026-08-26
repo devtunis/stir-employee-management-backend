@@ -9,16 +9,15 @@ const approveCongeController =async (req,res) => {
         reason,
         nbjr,
         nom ,
-
         debut,
         fin,
         typeConge,
-    
+       reasonrefu
       } = req.body
 
     
     
-    if(!roomId || !cin || answer==undefined || !reason || !nbjr || !nom  ){
+    if(!roomId || !cin || answer==undefined || !reason  || !nom  ){
         return res.status(404).json({
             err:"missing fields"
         })
@@ -81,25 +80,39 @@ const approveCongeController =async (req,res) => {
         })
     }
     if(getMynext=="end"){
-
          
-    let result_pull =      await Organization.findOneAndUpdate(
-                {
-                    roomId,
-                    "members.request_conge.cin": cin
-                },
-                {
-                    $pull: {
-                    "members.$[].request_conge": {
-                        cin: cin
-                    }
-                    }
-                },
-                {
-                    returnDocument:"after"
-                }
-            )
+         
+        // for protect fake requests
+    
+        if(!seeMyRoles.members[0].request_conge.find((item)=>item.cin==cin))
+        {
 
+            return res.status(404).json({
+                err:"this request not in quee list 🤦‍♂️"
+            })
+        }
+   
+      
+         
+            let result_pull =      await Organization.findOneAndUpdate(
+                        {
+                            roomId,
+                            "members.request_conge.cin": cin
+                        },
+                        {
+                            $pull: {
+                            "members.$[].request_conge": {
+                                cin: cin
+                            }
+                            }
+                        },
+                        {
+                            returnDocument:"after"
+                        }
+                    )
+
+
+                    console.log(debut,fin,typeConge,"should  be send ths this before each request body log from backend line 126")
 
 
             await Organization.findOneAndUpdate({
@@ -108,7 +121,14 @@ const approveCongeController =async (req,res) => {
             },
             {
                     $addToSet:{
-                        "members.$.response_conge":{reponse:answer?"yes":"no",cin_reponse:req.user.cin,reason:answer?"*":reason}
+                        "members.$.response_conge":{
+                            reponse:answer?"yes":"no",
+                            cin_reponse:req.user.cin,
+                            reason:answer?"valide":reasonrefu,
+                            debut:debut  ,
+                            fin:fin  ,
+                            typeConge:typeConge
+                        }
                     }
                 }
             ,{
@@ -116,6 +136,23 @@ const approveCongeController =async (req,res) => {
             }
         
             )
+
+
+                    await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest":"no request Pending",
+                    "members.$.conge":99
+                    },
+                }
+                );
+
+
+
 
 
      return res.status(200).json({
@@ -129,6 +166,9 @@ const approveCongeController =async (req,res) => {
       
       
     }    
+
+
+
     if(getMynext && getMynext!="nil" && answer){
 
 
@@ -164,6 +204,7 @@ const approveCongeController =async (req,res) => {
             
           
 
+
           await Organization.findOneAndUpdate({
                     roomId,
                    "members.cin":getMynext,
@@ -181,6 +222,21 @@ const approveCongeController =async (req,res) => {
   
             console.log(result_pull,"custom preview")
 
+            console.log("this should be working as user")
+
+
+                    await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest":result_pull.members.find((item)=>item.cin==getMynext).role   ,
+                    },
+                }
+                );
+
       
         return res.status(200).json({
             info:"should be send my next thing to" +" " +getMynext ,
@@ -194,7 +250,7 @@ const approveCongeController =async (req,res) => {
     if(getMynext && getMynext!="nil" && !answer){
 
 
-              await Organization.findOneAndUpdate(
+          let result_pull =       await Organization.findOneAndUpdate(
                 {
                     roomId,
                     "members.request_conge.cin": cin
@@ -221,7 +277,16 @@ const approveCongeController =async (req,res) => {
             },
             {
                     $addToSet:{
-                        "members.$.response_conge":{reponse:answer?"yes":"no",cin_reponse:req.user.cin,reason:answer?"*":reason}
+                        "members.$.response_conge":{
+                             reponse:"no"
+                            ,cin_reponse:req.user.cin,
+                            reason:reasonrefu,
+                            debut:debut,
+                            fin:fin,
+                            reason:reasonrefu,
+                            typeConge:typeConge
+                            
+                        }
                     }
                 }
             ,{
@@ -231,8 +296,28 @@ const approveCongeController =async (req,res) => {
             )
 
 
-        return res.status(200).json({
-            err:"should be refuse  my next thing to" +"user?="+cin
+                 await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest": "no request Pending",
+                    },
+                }
+                );
+
+
+
+
+
+         return res.status(200).json({
+            info:"should be send my next thing to" +" " +cin ,
+            info:{roomId,cin,answer,reason,nbjr,nom} ,
+            pullview:result_pull,
+            res:result_pull.members.find((item)=>item.cin==req.user.cin).request_conge  
+
         })
         
     }

@@ -26,13 +26,16 @@ const OrganizationSchema = new mongoose.Schema(
         conge :{type:Number,default:21},
         salaire  :{type:Number,default:2000},
         next:{type:String,default:"nil"},
+        findMyrequest:{type:String,default:"no request Pending"},
         response_conge :[
           {
           reponse:{type:String},
           cin_reponse:{type:String},
           reason :{type:String},
-          debut:{tyep:String},
-          fin:{tyep:String},
+          debut:{type:String,required:true},
+          fin:{type:String,required:true},
+          typeConge:{type:String,required:true},
+          
           dateResponse_conge: {
               type: Date,
               default: Date.now
