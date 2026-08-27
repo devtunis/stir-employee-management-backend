@@ -1,4 +1,5 @@
 import Organization from "../model/organization.js"
+import { daysBetween } from "../util/daysBetween.js"
 
  
 const approveCongeController =async (req,res) => {
@@ -86,22 +87,12 @@ const approveCongeController =async (req,res) => {
     
         if(!seeMyRoles.members[0].request_conge.find((item)=>item.cin==cin))
         {
-
             return res.status(404).json({
                 err:"this request not in quee list 🤦‍♂️"
             })
         }
    
-         function extractdays(d1,d2){
- 
-            
-                let sp1 =Number( d1.split("/")[2])
-                let sp2 =Number(d2.split("/")[2]) 
-                
-                return sp2 -sp1
-                
-                
-            }
+         
           
             let result_pull =      await Organization.findOneAndUpdate(
                         {
@@ -120,7 +111,7 @@ const approveCongeController =async (req,res) => {
                         }
                     )
 
-            let getNbjr = extractdays(debut,fin)
+            let getNbjr = daysBetween(debut,fin)
             let CinConge = result_pull.members.find((item)=>item.cin==cin).conge 
                 
 
