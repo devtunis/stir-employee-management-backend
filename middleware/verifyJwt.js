@@ -12,7 +12,7 @@ const verifyJwt = (req,res,next) => {
 
    
      if(Token){
-      console.log(process.env.secret_key,"secerte_key")
+   
              const data =  jwt.verify(Token, process.env.secret_key)
               req.user = data
      }

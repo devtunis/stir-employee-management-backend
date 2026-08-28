@@ -49,6 +49,8 @@ const setnextController = async(req,res) => {
                 },
                 {returnDocument:"after"}
               )
+
+              let k  = null
               if(head){
                const responseUser =  await Organization.findOneAndUpdate({
                         roomId:repoId
@@ -61,13 +63,25 @@ const setnextController = async(req,res) => {
                     }
                 )
                 console.log(responseUser)
+                k=responseUser.head
               }
     
                 
     
     
               
-               res.status(200).json(setWorker)
+               res.status(200).json({
+                res :setWorker ,
+                filteradmin : setWorker.members.filter((item)=>item.role.includes("admin")),
+                LeaksMembers :setWorker.members.filter((item)=>item.role.includes("admin")).map((item)=> ({
+                                cin:item.cin,
+                                role:item.role,
+                                next:item.next,
+                                isHead:item.cin ==k
+
+                            }))
+    
+               })
         }
         catch(err){
             res.status(404).json({message :err.message})

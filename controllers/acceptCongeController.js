@@ -11,7 +11,7 @@ const seeCongeController = async (req,res) => {
    
 
    if(fetchrepoID.ownerId == req.user.cin){
-    return res.status(200).json({
+    return res.status(404).json({
         err:"you the owner  just you can set admins and remove admins"
     })
    }
