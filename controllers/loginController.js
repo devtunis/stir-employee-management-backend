@@ -8,7 +8,7 @@ const loginController = async(req,res) => {
         return res.status(404).json({err: "mising fields"})
     }
     try{
-        const fetchUser = await User.findOne({cin,password})
+        const fetchUser = await User.findOne({cin,password}).select("-password -_id")
     
          
         if(fetchUser){

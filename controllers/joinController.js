@@ -6,7 +6,7 @@ const joinController = async(req,res) => {
 
           const {repoId} = req.body
        
-          console.log(repoId,"<==")
+         
           if(!repoId){
             return res.status(404).json({messag: "missing repoID"})
           }

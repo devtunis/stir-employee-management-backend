@@ -10,6 +10,7 @@ import useSeefollowOrg from "./routes/useSeefollowOrg.js"
 import usegetmydata from "./routes/verifyandgetdata.js"
 import useMoreInfo from "./routes/useMoreInfo.js"
 import useowneracces from "./routes/useownerAcces.js"
+import usenewpost from './routes/newPost.js'
 const app = express()
 
 
@@ -31,8 +32,12 @@ app.use("/seefollowOrg",verifyJwt,useSeefollowOrg)
 app.use("/getmyaata",verifyJwt,usegetmydata)
 app.use("/more_info_about_user",verifyJwt,useMoreInfo)
 app.use("/ownerccess",verifyJwt,useowneracces)
-
+app.use("/upload",verifyJwt,usenewpost)
+ 
  
 app.listen(process.env.PORT,()=>console.log(`Server Listen Port ${process.env.PORT}`))
 
 
+
+
+ 

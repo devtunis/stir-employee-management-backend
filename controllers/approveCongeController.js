@@ -124,7 +124,7 @@ const approveCongeController =async (req,res) => {
                         "members.$.response_conge":{
                             reponse:answer?"yes":"no",
                             cin_reponse:req.user.cin,
-                            reason:answer?"valide":reasonrefu,
+                            reason:answer?reason:reasonrefu,
                             debut:debut  ,
                             fin:fin  ,
                             typeConge:typeConge
