@@ -11,6 +11,7 @@ import usegetmydata from "./routes/verifyandgetdata.js"
 import useMoreInfo from "./routes/useMoreInfo.js"
 import useowneracces from "./routes/useownerAcces.js"
 import usenewpost from './routes/newPost.js'
+
 const app = express()
 
 

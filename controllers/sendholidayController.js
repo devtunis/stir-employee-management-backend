@@ -82,10 +82,79 @@ const sendholidayController = async(req,res) => {
     
         res.status(200).json(send_holiday_request)
      }else{
-         res.status(200).json("you special case admin we will figure out aobut you")
+     
+        const getNext = finduser?.members[0].next
+        console.log(getNext)
+         
+        if(getNext=="end"){
+            const isHavePendingRequtes  = await  Organization.findOneAndUpdate({
+                roomId,
+                "request_holiday.seen":false
+            })
+        if(isHavePendingRequtes){
+            return res.status(409).json({message:"you have Pending request!"})
+        }
+          
+            
+                const SendToOwner = await Organization.findOneAndUpdate(
+                { roomId },
+                {
+                    $push: {
+                        request_holiday: {
+                            cin: req.user.cin,
+                            reason,
+                            roomId,
+                            nom:req.user.nom,
+                            debut,
+                            fin,
+                            typeConge
+                        }
+                    }
+                },
+                {returnDocument:"after"}
+            );
+
+
+
+         return   res.status(200).json({
+                message:"sent you !",
+                SendToOwner
+            })
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        await Organization.findOneAndUpdate({
+                    roomId,
+                "members.cin":getNext,
+                 
+                },{
+                    $addToSet:{
+                        "members.$.request_conge":{cin:req.user.cin,reason,nbjr,roomId,nom:req.user.nom,debut,fin,typeConge}
+                    }
+                }
+
+                ,{
+                    returnDocument:"after"
+                }
+            )
+
+
+         res.status(200).json(`sumbit to next:${getNext}`)
      }
    
   }catch(error){
+    console.log(error.message)
      
     res.status(404).json({err:error.message})
   }

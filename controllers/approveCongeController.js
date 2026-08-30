@@ -31,6 +31,90 @@ const approveCongeController =async (req,res) => {
         })
     }
  
+
+
+    // ownercheck 
+
+
+    const checkIfowner = findRoom.ownerId ==req.user.cin
+    if(checkIfowner)
+    {
+
+        if(answer){
+
+                await Organization.findOneAndUpdate({
+                        roomId,
+                       "members.cin":cin,
+                        
+                    },{
+                        $addToSet:{
+                            "members.$.response_conge":{reponse:"yes",cin:cin,reason:reason,nbjr,roomId,nom:nom,debut,fin,typeConge}
+                        }
+                    }
+            
+                    ,{
+                        returnDocument:"after"
+                    }
+                )
+  
+        }
+          
+        else{
+            
+            await Organization.findOneAndUpdate({
+                roomId, 
+                "members.cin" :cin
+            },
+            {
+                    $addToSet:{
+                        "members.$.response_conge":{
+                             reponse:"no"
+                            ,cin_reponse:"owner",
+                            reason:reasonrefu,
+                            debut:debut,
+                            fin:fin,
+                            reason:reasonrefu,
+                            typeConge:typeConge
+                            
+                        }
+                    }
+                }
+            ,{
+                returnDocument:"after"
+            }
+        
+            )
+
+        }
+                const pull = await Organization.findOneAndUpdate(
+            {
+                roomId,
+                "request_holiday.cin": cin
+            },
+            {
+                $set: {
+                "request_holiday.$[holiday].seen": true
+                }
+            },
+            {
+                arrayFilters: [
+                {
+                    "holiday.cin": cin,
+                    "holiday.seen": false
+                }
+                ],
+                new: true
+            }
+            ); 
+ 
+
+
+        
+        return res.status(200).json({message:"succes",pull})
+    }
+
+
+    //ownercheck
     
     const checkIfCinExisit = await Organization.findOne(
         {roomId,
@@ -51,13 +135,196 @@ const approveCongeController =async (req,res) => {
             err:"this user not here in this organization"
         })
     }
-  
-        const Permision = checkIfCinExisit.members[0].role
-        if(Permision.includes("admin")){
-            return res.status(404).json({
-                err:"admins special traitemnt"
+  //--------------------------
+        const Permision = checkIfCinExisit
+        if(Permision.members[0].role.includes("admin")){
+           
+            const getnextadmin  = findRoom.members.find((item)=>item.cin == req.user.cin).next
+            console.log(getnextadmin)
+            if(getnextadmin=="end"){
+
+
+                    let result_pull =     await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.request_conge.cin": cin
+                },
+                {
+                    $pull: {
+                    "members.$[].request_conge": {
+                        cin: cin
+                    }
+                    }
+                },
+                {
+                    returnDocument:"after"
+                }
+                );
+            
+
+                
+            let getNbjr = daysBetween(debut,fin)
+            let CinConge = result_pull.members.find((item)=>item.cin==cin).conge 
+                
+
+            await Organization.findOneAndUpdate({
+                roomId, 
+                "members.cin" :cin
+            },
+            {
+                    $addToSet:{
+                        "members.$.response_conge":{
+                            reponse:answer?"yes":"no",
+                            cin_reponse:req.user.cin,
+                            reason:answer?reason:reasonrefu,
+                            debut:debut  ,
+                            fin:fin  ,
+                            typeConge:typeConge
+                        }
+                    }
+                }
+            ,{
+                returnDocument:"after"
+            }
+        
+            )
+
+
+                    await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest":"no request Pending",
+                    "members.$.conge":CinConge -  getNbjr
+                    },
+                }
+                );
+
+
+                return res.status(200).json({ res:result_pull.members.find((item)=>item.cin==req.user.cin).request_conge  
+
+        })
+
+
+                 
+            }
+          
+            let result_pull =     await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.request_conge.cin": cin
+                },
+                {
+                    $pull: {
+                    "members.$[].request_conge": {
+                        cin: cin
+                    }
+                    }
+                },
+                {
+                    returnDocument:"after"
+                }
+                );
+            
+          
+       if(answer){
+
+
+          await Organization.findOneAndUpdate({
+                        roomId,
+                       "members.cin":getnextadmin,
+                        
+                    },{
+                        $addToSet:{
+                            "members.$.request_conge":{cin:cin,reason:reason,nbjr,roomId,nom:nom,debut,fin,typeConge}
+                        }
+                    }
+            
+                    ,{
+                        returnDocument:"after"
+                    }
+                )
+ 
+
+
+          await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest":result_pull.members.find((item)=>item.cin==getnextadmin).role   ,
+                    },
+                }
+                );
+
+
+       }else{
+
+
+
+
+
+            await Organization.findOneAndUpdate({
+                roomId, 
+                "members.cin" :cin
+            },
+            {
+                    $addToSet:{
+                        "members.$.response_conge":{
+                             reponse:"no"
+                            ,cin_reponse:req.user.cin,
+                            reason:reasonrefu,
+                            debut:debut,
+                            fin:fin,
+                            reason:reasonrefu,
+                            typeConge:typeConge
+                            
+                        }
+                    }
+                }
+            ,{
+                returnDocument:"after"
+            }
+        
+            )
+
+
+                 await Organization.findOneAndUpdate(
+                {
+                    roomId,
+                    "members.cin": cin,
+                },
+                {
+                    $set: {
+                    "members.$.findMyrequest": "no request Pending",
+                    },
+                }
+                );
+
+
+
+                
+              
+       }
+
+         
+
+
+            
+
+            return res.status(301).json({
+               
+                 res:result_pull.members.find((item)=>item.cin==req.user.cin).request_conge  
             })
         }
+
+
+        //----------------------------------
         const seeMyRoles =   await Organization.findOne({
             roomId,
             "members.cin":req.user.cin ,
@@ -172,7 +439,7 @@ const approveCongeController =async (req,res) => {
     if(getMynext && getMynext!="nil" && answer){
 
 
-        const ifThisOderInmyRquests = Organization.findOne({
+        const ifThisOderInmyRquests = await Organization.findOne({
             roomId,
             "members.request_conge.cin":cin
         })
@@ -220,9 +487,7 @@ const approveCongeController =async (req,res) => {
                 }
             )
   
-            console.log(result_pull,"custom preview")
-
-            console.log("this should be working as user")
+       
 
 
                     await Organization.findOneAndUpdate(

@@ -6,6 +6,29 @@ const OrganizationSchema = new mongoose.Schema(
     nameOrganization: {type: String, trim: true},
     ownerId: {type: String},
     activity :{type:String},
+    request_holiday : [
+
+           {
+            _id:false,
+            cin:{type:String},
+            reason:{type:String},
+            roomId :{type:String},
+            nom :{type:String},
+            debut:{type:String},
+            fin :{type:String},
+            typeConge:{type:String},
+            seen:{type:Boolean,default:false},
+            datedemande: {
+              type: Date,
+              default: Date.now
+            }
+            
+
+          }
+
+
+    ],
+
     requests :[
       {
          _id: false,

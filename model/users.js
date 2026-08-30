@@ -5,6 +5,7 @@ const UserSechma = new  mongoose.Schema({
     cin :{type: String},
     nom : {type:String},
     prenom : {type:String},
+    tlf:{type:String},
     password : {type:String},
     
 },{timestamps:true})
